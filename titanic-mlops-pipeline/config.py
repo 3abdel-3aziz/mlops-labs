@@ -24,3 +24,5 @@ CATBOOST_PARAMS = {
     "loss_function": "Logloss",
     "verbose": False
 }
+
+MODEL_SAVE_PATH = "models/saved_model.pkl"
