@@ -8,3 +8,19 @@ RANDOM_STATE = 42
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+XGB_PARAMS = {
+    "n_estimators": 500,
+    "learning_rate": 0.05,
+    "max_depth": 6,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "random_state": RANDOM_STATE
+}
+
+CATBOOST_PARAMS = {
+    "iterations": 500,
+    "learning_rate": 0.05,
+    "depth": 6,
+    "loss_function": "Logloss",
+    "verbose": False
+}
