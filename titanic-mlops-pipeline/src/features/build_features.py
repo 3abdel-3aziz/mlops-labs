@@ -25,8 +25,11 @@ class Handeller(ABC):
         return df_copy
 
     def drop_column(self, df , column:list) :
-        df_new = df.drop(columns=column)
-        return df_new
+               for col in column:
+                    if col not in df.columns:
+                         raise ValueError(f"Column {col} not found in dataframe")            
+               df_new = df.drop(columns=column)
+               return df_new
 
 
 class NumericalHandeller(Handeller):
@@ -40,6 +43,8 @@ class NumericalHandeller(Handeller):
     def fit_transform(self, df):
         df_copy = df.copy()
         self.fit(df_copy)
+        if self.learned_number is None :
+            raise ValueError("fit was not prop")
         return self.transform(df_copy)
 
     

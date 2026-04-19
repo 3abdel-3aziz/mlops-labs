@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np 
 from abc import ABC, abstractmethod
 from config import TRAIN_DATA_PATH , TEST_DATA_PATH , TARGET_COL, TRAIN_SIZE, TEST_SIZE , RANDOM_STATE
-from sklearn import train_test_split
+from sklearn.model_selection import train_test_split
 from enum import    Enum
 class DataIngestion(ABC):
 
