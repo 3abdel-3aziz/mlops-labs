@@ -1,28 +1,23 @@
 import pandas as pd
-
+from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
-
-# import your classes
-from  features import (
-    NumericalHandeller,
-    CategoricalHandeller,
-    Encoder,
-    ImputeStrategy,
-    EncodingStrategy
-)
-
+from xgboost import XGBClassifier
+from src.data  import  DataIngestion, CSVDataIngestion, DataSplitter
+from src.features import Handeller, NumericalHandeller, CategoricalHandeller, ImputeStrategy, Encoder, EncodingStrategy
+from src.models import ModelTrainer, ClassificationEvaluator , ModelPredictor
+from config import TRAIN_DATA_PATH , TEST_DATA_PATH , TEST_SIZE, RANDOM_STATE , XGB_PARAMS
 # =========================
 # 1. Load Data
 # =========================
-df = pd.read_csv("titanic.csv")
+df = pd.read_csv(TRAIN_DATA_PATH)
 
 # =========================
 # 2. Drop useless columns
 # =========================
-df = df.drop(columns=["PassengerId", "Name"])
-
+cols_to_drop = ['Ticket', 'Name', 'Cabin', 'PassengerId']
+df = df.drop(columns=cols_to_drop)
 # =========================
 # 3. Split features/target
 # =========================
@@ -32,7 +27,10 @@ X = df.drop(columns=[TARGET])
 y = df[TARGET]
 
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
+    X, 
+    y, 
+    test_size=TEST_SIZE,    
+    random_state=RANDOM_STATE 
 )
 
 # =========================
@@ -98,12 +96,19 @@ X_test = embarked_encoder.transform(X_test)
 # =========================
 # 9. Model
 # =========================
-model = LogisticRegression(max_iter=1000)
-model.fit(X_train, y_train)
+# model = LogisticRegression(max_iter=1000)
+# model.fit(X_train, y_train)
 
-# =========================
-# 10. Predict + Evaluate
-# =========================
-preds = model.predict(X_test)
+# # =========================
+# # 10. Predict + Evaluate
+# # =========================
+# preds = model.predict(X_test)
 
-print("Accuracy:", accuracy_score(y_test, preds))
+# print("Accuracy:", accuracy_score(y_test, preds))
+model2 = XGBClassifier(**XGB_PARAMS)
+model2.fit(X_train, y_train)
+
+preds2 = model2.predict(X_test)
+
+print("Accuracy:", accuracy_score(y_test, preds2))
+

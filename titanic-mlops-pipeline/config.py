@@ -1,13 +1,14 @@
 TRAIN_DATA_PATH = r"D:\ITI\iti.mlops\data_0\train.csv"
 TEST_DATA_PATH = r"D:\ITI\iti.mlops\data_0\test.csv"
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>> SPLITTING_DATA ===========================
-TRAIN_SIZE = 0.8
-VALIDATION_SIZE = 0.2
+
 TARGET_COL = "Survived"
+TRAIN_SIZE = 0.8
+TEST_SIZE = 0.2  
 RANDOM_STATE = 42
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
+MODEL_PATH = "models/model.pkl"
 
 
 XGB_PARAMS = {
@@ -19,12 +20,6 @@ XGB_PARAMS = {
     "random_state": RANDOM_STATE
 }
 
-CATBOOST_PARAMS = {
-    "iterations": 500,
-    "learning_rate": 0.05,
-    "depth": 6,
-    "loss_function": "Logloss",
-    "verbose": False
-}
+
 
 MODEL_SAVE_PATH = "models/saved_model.pkl"
