@@ -23,3 +23,4 @@ XGB_PARAMS = {
 
 
 MODEL_SAVE_PATH = "models/saved_model.pkl"
+PREPROCESSOR_PATH = "models/preprocessors.pkl"
