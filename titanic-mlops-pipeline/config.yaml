@@ -1,4 +1,4 @@
-# conf/config.yaml
+# configuration file
 paths:
   train_data: "D:/ITI/iti.mlops/data_0/train.csv"
   test_data: "D:/ITI/iti.mlops/data_0/test.csv"

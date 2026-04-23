@@ -1,115 +1,88 @@
 import pandas as pd
+import hydra
+from omegaconf import DictConfig
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
 from xgboost import XGBClassifier
 import joblib
-import os
-from src.data  import  DataIngestion, CSVDataIngestion, DataSplitter
+import os 
+
 from src.features import Handeller, NumericalHandeller, CategoricalHandeller, ImputeStrategy, Encoder, EncodingStrategy
-from src.models import ModelTrainer, ClassificationEvaluator , ModelPredictor
-from config import TRAIN_DATA_PATH , TEST_DATA_PATH , TEST_SIZE, RANDOM_STATE , XGB_PARAMS , MODEL_SAVE_PATH , PREPROCESSOR_PATH
-# =========================
-# 1. Load Data
-# =========================
-df = pd.read_csv(TRAIN_DATA_PATH)
 
-# 2. Drop useless columns
+@hydra.main(config_path="conf", config_name="config", version_base="1.2")
+def main(cfg: DictConfig):
+    # =========================
+    # 1. Load Data (Using YOUR YAML: paths.train_data)
+    # =========================
+    df = pd.read_csv(cfg.paths.train_data)
 
-cols_to_drop = ['Ticket', 'Name', 'Cabin', 'PassengerId']
-df = df.drop(columns=cols_to_drop)
+    cols_to_drop = ["PassengerId", "Name", "Ticket", "Cabin"]
+    df = df.drop(columns=cols_to_drop)
 
-# 3. Split features/target
+    # 3. Target and Splitting (Using YOUR YAML: splitting.target)
+    TARGET = cfg.splitting.target
 
+    X = df.drop(columns=[TARGET])
+    y = df[TARGET]
 
-TARGET = "Survived"
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, 
+        y, 
+        test_size=cfg.splitting.test_size,    
+        random_state=cfg.splitting.random_state 
+    )
 
-X = df.drop(columns=[TARGET])
-y = df[TARGET]
+    # 4. Define handlers
+    age_handler = NumericalHandeller(column="Age", impute_strategy=ImputeStrategy.MEAN)
+    fare_handler = NumericalHandeller(column="Fare", impute_strategy=ImputeStrategy.MEDIAN)
+    sex_handler = CategoricalHandeller(column="Sex")
+    embarked_handler = CategoricalHandeller(column="Embarked")
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X, 
-    y, 
-    test_size=TEST_SIZE,    
-    random_state=RANDOM_STATE 
-)
+    # 5 & 6. Fit and Transform
+    for handler in [age_handler, fare_handler, sex_handler, embarked_handler]:
+        handler.fit(X_train)
+        X_train = handler.transform(X_train)
+        X_test = handler.transform(X_test)
 
-# 4. Define handlers
+    # 8. Encoding
+    sex_encoder = Encoder("Sex", EncodingStrategy.LABEL)
+    embarked_encoder = Encoder("Embarked", EncodingStrategy.ONE_HOT)
 
-# Numerical columns
-age_handler = NumericalHandeller(
-    column="Age",
-    impute_strategy=ImputeStrategy.MEAN
-)
+    sex_encoder.fit(X_train)
+    embarked_encoder.fit(X_train)
 
-fare_handler = NumericalHandeller(
-    column="Fare",
-    impute_strategy=ImputeStrategy.MEDIAN
-)
+    X_train = sex_encoder.transform(X_train)
+    X_train = embarked_encoder.transform(X_train)
+    X_test = sex_encoder.transform(X_test)
+    X_test = embarked_encoder.transform(X_test)
 
-# Categorical columns
-sex_handler = CategoricalHandeller(column="Sex")
-embarked_handler = CategoricalHandeller(column="Embarked")
+    # 9. Model (Using YOUR YAML model params)
+    model = XGBClassifier(
+        n_estimators=cfg.model.n_estimators,
+        learning_rate=cfg.model.learning_rate,
+        max_depth=cfg.model.max_depth,
+        subsample=cfg.model.subsample,
+        colsample_bytree=cfg.model.colsample_bytree
+    )
+    model.fit(X_train, y_train)
 
+    preds = model.predict(X_test)
+    print(f"\n Accuracy: {accuracy_score(y_test, preds)}")
 
-# 5. Fit on TRAIN only
+    os.makedirs(os.path.dirname(cfg.paths.model_save), exist_ok=True)
+    joblib.dump(model, cfg.paths.model_save)
+    
+    artifacts = {
+        "age_handler": age_handler,
+        "fare_handler": fare_handler,
+        "sex_handler": sex_handler,
+        "embarked_handler": embarked_handler,
+        "sex_encoder": sex_encoder,
+        "embarked_encoder": embarked_encoder,
+        "cols_to_drop": cols_to_drop
+    }
+    joblib.dump(artifacts, cfg.paths.preprocessor_save)
+    print(f" Artifacts saved to: {cfg.paths.model_save}")
 
-age_handler.fit(X_train)
-fare_handler.fit(X_train)
-sex_handler.fit(X_train)
-embarked_handler.fit(X_train)
-
-# 6. Transform TRAIN
-
-X_train = age_handler.transform(X_train)
-X_train = fare_handler.transform(X_train)
-X_train = sex_handler.transform(X_train)
-X_train = embarked_handler.transform(X_train)
-
-# 7. Transform TEST
-
-X_test = age_handler.transform(X_test)
-X_test = fare_handler.transform(X_test)
-X_test = sex_handler.transform(X_test)
-X_test = embarked_handler.transform(X_test)
-
-# 8. Encoding
-
-sex_encoder = Encoder("Sex", EncodingStrategy.LABEL)
-embarked_encoder = Encoder("Embarked", EncodingStrategy.ONE_HOT)
-
-sex_encoder.fit(X_train)
-embarked_encoder.fit(X_train)
-
-X_train = sex_encoder.transform(X_train)
-X_train = embarked_encoder.transform(X_train)
-
-X_test = sex_encoder.transform(X_test)
-X_test = embarked_encoder.transform(X_test)
-
-# 9. Model
-
-model = XGBClassifier(**XGB_PARAMS)
-model.fit(X_train, y_train)
-
-preds2 = model.predict(X_test)
-
-print("Accuracy:", accuracy_score(y_test, preds2))
-
-
-joblib.dump(model, MODEL_SAVE_PATH)
-
-artifacts = {
-    "age_handler": age_handler,
-    "fare_handler": fare_handler,
-    "sex_handler": sex_handler,
-    "embarked_handler": embarked_handler,
-    "sex_encoder": sex_encoder,
-    "embarked_encoder": embarked_encoder,
-    "cols_to_drop": cols_to_drop
-}
-
-joblib.dump(artifacts, PREPROCESSOR_PATH)
-print(f"\n Artifacts are now inside the '{os.path.dirname(MODEL_SAVE_PATH)}' folder.")
-
+if __name__ == "__main__":
+    main()

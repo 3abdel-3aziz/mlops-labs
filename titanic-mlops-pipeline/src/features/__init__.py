@@ -1,1 +1,1 @@
-from .build_features import Handeller, NumericalHandeller, CategoricalHandeller , ImputeStrategy, Encoder, EncodingStrategy
+from .build_features import Handeller, NumericalHandeller, CategoricalHandeller, ImputeStrategy, Encoder, EncodingStrategy
