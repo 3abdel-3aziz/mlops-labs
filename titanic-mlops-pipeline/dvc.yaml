@@ -10,9 +10,9 @@ stages:
       - data/interim/test_raw.csv
 
   preprocess:
-    cmd: uv run python -m src.stages.data_preprocessing
+    cmd: uv run python -m src.stages.data_preprocess
     deps:
-      - src/stages/data_preprocessing.py
+      - src/stages/data_preprocess.py
       - src/features/
       - data/interim/train_raw.csv
       - data/interim/test_raw.csv
@@ -20,7 +20,7 @@ stages:
       - data/processed/train_processed.csv
       - data/processed/test_processed.csv
       - models/preprocessor.joblib
-
+      
   train:
     cmd: uv run python -m src.stages.train
     deps:

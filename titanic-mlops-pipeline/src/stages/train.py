@@ -5,7 +5,6 @@ import joblib
 import os
 
 def train():
-    # 1. Load Config
     with open("config.yaml", "r") as f:
         config = yaml.safe_load(f)
 
@@ -15,13 +14,16 @@ def train():
     X_train = train_df.drop(columns=[TARGET])
     y_train = train_df[TARGET]
 
+    
     model = XGBClassifier(
-        n_estimators=config['model']['n_estimators'],
-        learning_rate=config['model']['learning_rate'],
-        max_depth=config['model']['max_depth'],
-        subsample=config['model']['subsample'],
-        colsample_bytree=config['model']['colsample_bytree'],
-        random_state=config['params']['random_state']
+        n_estimators=config['model_params']['n_estimators'],
+        learning_rate=config['model_params']['learning_rate'],
+        max_depth=config['model_params']['max_depth'],
+        subsample=config['model_params']['subsample'],
+        colsample_bytree=config['model_params']['colsample_bytree'],
+        random_state=config['params']['random_state'],
+        use_label_encoder=False,
+        eval_metric='logloss'
     )
     
     print("Training the model...")

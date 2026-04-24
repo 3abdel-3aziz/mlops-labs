@@ -1,0 +1,99 @@
+schema: '2.0'
+stages:
+  data_load:
+    cmd: uv run python -m src.stages.data_load
+    deps:
+    - path: config.yaml
+      hash: md5
+      md5: cb151fbcf46b2bef412c3c7c5079c9f5
+      size: 613
+    - path: src/data/make_dataset.py
+      hash: md5
+      md5: a6f01408e0a325b17153d590802939f5
+      size: 991
+    - path: src/stages/data_load.py
+      hash: md5
+      md5: 6fa9caefa7e43735953adab24f73a62b
+      size: 880
+    outs:
+    - path: data/interim/test_raw.csv
+      hash: md5
+      md5: 96fdd9f251ef8c7251390f6a7944646b
+      size: 4908
+    - path: data/interim/train_raw.csv
+      hash: md5
+      md5: 5714b0df39c38034b45a83baaf3c37d5
+      size: 19217
+  preprocess:
+    cmd: uv run python -m src.stages.data_preprocess
+    deps:
+    - path: data/interim/test_raw.csv
+      hash: md5
+      md5: 96fdd9f251ef8c7251390f6a7944646b
+      size: 4908
+    - path: data/interim/train_raw.csv
+      hash: md5
+      md5: 5714b0df39c38034b45a83baaf3c37d5
+      size: 19217
+    - path: src/features/
+      hash: md5
+      md5: dc9c30e3cc388c7f693584b340e5435f.dir
+      size: 14825
+      nfiles: 5
+    - path: src/stages/data_preprocess.py
+      hash: md5
+      md5: fa25f4f4bdb493fcb364afdb8da1c8c1
+      size: 2348
+    outs:
+    - path: data/processed/test_processed.csv
+      hash: md5
+      md5: f4cc0bf5d6e438182092365246288f4c
+      size: 6713
+    - path: data/processed/train_processed.csv
+      hash: md5
+      md5: 14833e6bb64194917556e9f927235013
+      size: 26257
+    - path: models/preprocessor.joblib
+      hash: md5
+      md5: adc4ea075d67b11a3f71839a14dd626f
+      size: 1882
+  train:
+    cmd: uv run python -m src.stages.train
+    deps:
+    - path: config.yaml
+      hash: md5
+      md5: cb151fbcf46b2bef412c3c7c5079c9f5
+      size: 613
+    - path: data/processed/train_processed.csv
+      hash: md5
+      md5: 14833e6bb64194917556e9f927235013
+      size: 26257
+    - path: src/stages/train.py
+      hash: md5
+      md5: 53ab7dc1519cd7af2db748acdb8828f6
+      size: 1153
+    outs:
+    - path: models/model.joblib
+      hash: md5
+      md5: b207a59a53aad2e4cc85b934dff3e08e
+      size: 988634
+  evaluate:
+    cmd: uv run python -m src.stages.evaluate
+    deps:
+    - path: data/processed/test_processed.csv
+      hash: md5
+      md5: f4cc0bf5d6e438182092365246288f4c
+      size: 6713
+    - path: models/model.joblib
+      hash: md5
+      md5: b207a59a53aad2e4cc85b934dff3e08e
+      size: 988634
+    - path: src/stages/evaluate.py
+      hash: md5
+      md5: d290bb90a57a940096d5e266887f3110
+      size: 881
+    outs:
+    - path: reports/metrics.txt
+      hash: md5
+      md5: 4df7b7b2b207918bedec6c3937a5d97f
+      size: 364
