@@ -1,4 +1,6 @@
 import numpy as np
+import json
+import os
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
@@ -39,3 +41,11 @@ class ClassificationEvaluator:
             "recall": self.recall(y_true, y_pred),
             "f1_score": self.f1(y_true, y_pred)
         }
+    def save_metrics(self, metrics, output_path):
+     
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        
+        with open(output_path, "w") as f:
+            json.dump(metrics, f, indent=4)
+            
+        print(f"Metrics saved successfully to: {output_path}")
