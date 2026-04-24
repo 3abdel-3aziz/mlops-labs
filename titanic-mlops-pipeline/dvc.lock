@@ -75,8 +75,8 @@ stages:
     outs:
     - path: models/model.joblib
       hash: md5
-      md5: b207a59a53aad2e4cc85b934dff3e08e
-      size: 988634
+      md5: cd4303f5e379bafb815a98182193b84f
+      size: 442911
   evaluate:
     cmd: uv run python -m src.stages.evaluate
     deps:
@@ -86,8 +86,8 @@ stages:
       size: 6713
     - path: models/model.joblib
       hash: md5
-      md5: b207a59a53aad2e4cc85b934dff3e08e
-      size: 988634
+      md5: cd4303f5e379bafb815a98182193b84f
+      size: 442911
     - path: src/stages/evaluate.py
       hash: md5
       md5: eb983a88ca4a354d57aacb55afd62b67
