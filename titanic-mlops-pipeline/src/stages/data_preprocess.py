@@ -1,18 +1,17 @@
 import pandas as pd
-import yaml
+import hydra
+from omegaconf import DictConfig
 import joblib
 import os
 
 from features import NumericalHandeller, CategoricalHandeller, ImputeStrategy, Encoder, EncodingStrategy
 
-def data_preprocessing():
-    with open("config.yaml", "r") as f:
-        config = yaml.safe_load(f)
-
+@hydra.main(config_path="../../", config_name="config", version_base="1.2")
+def data_preprocessing(cfg: DictConfig):
     train_df = pd.read_csv("data/interim/train_raw.csv") 
     test_df = pd.read_csv("data/interim/test_raw.csv")
 
-    TARGET = config['params']['target']
+    TARGET = cfg.params.target
     
     X_train = train_df.drop(columns=[TARGET])
     y_train = train_df[TARGET]
@@ -61,7 +60,7 @@ def data_preprocessing():
     os.makedirs("models", exist_ok=True)
     joblib.dump(artifacts, "models/preprocessor.joblib")
     
-    print(" Preprocessing completed and artifacts saved!")
+    print(" Preprocessing completed and artifacts saved via Hydra!")
 
 if __name__ == "__main__":
     data_preprocessing()

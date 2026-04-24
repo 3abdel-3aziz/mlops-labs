@@ -1,16 +1,17 @@
 import pandas as pd
-import yaml
+import hydra
+from omegaconf import DictConfig
 import joblib
 from sklearn.metrics import accuracy_score, classification_report
+import os
 
-def evaluate():
-    with open("config.yaml", "r") as f:
-        config = yaml.safe_load(f)
-
+@hydra.main(config_path="../../", config_name="config", version_base="1.2")
+def evaluate(cfg: DictConfig):
     test_df = pd.read_csv("data/processed/test_processed.csv")
+    
     model = joblib.load("models/model.joblib")
 
-    TARGET = config['params']['target']
+    TARGET = cfg.params.target
     X_test = test_df.drop(columns=[TARGET])
     y_test = test_df[TARGET]
 
@@ -24,9 +25,12 @@ def evaluate():
     print("\nDetailed Classification Report:")
     print(report)
 
+    os.makedirs("reports", exist_ok=True)
     with open("reports/metrics.txt", "w") as f:
         f.write(f"Accuracy: {acc}\n")
         f.write(report)
+    
+    print(" Evaluation completed and metrics saved via Hydra!")
 
 if __name__ == "__main__":
     evaluate()
