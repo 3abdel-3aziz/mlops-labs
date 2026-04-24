@@ -3,7 +3,7 @@ import numpy as np
 from abc import ABC, abstractmethod
 from enum import Enum
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
-
+import os 
 class ImputeStrategy(Enum):
     MEAN = "mean"
     MEDIAN = "median"
@@ -105,3 +105,17 @@ class Encoder:
         elif self.encode_strategy == EncodingStrategy.LABEL:
             df_copy[self.column] = self.encoded_value.transform(df_copy[self.column])
         return df_copy
+    
+class FeatureSaver:
+    @staticmethod
+    def save_data(train_df, test_df, output_path):
+
+        os.makedirs(output_path, exist_ok=True)
+        
+        train_path = os.path.join(output_path, "train_final.csv")
+        test_path = os.path.join(output_path, "test_final.csv")
+        
+        train_df.to_csv(train_path, index=False)
+        test_df.to_csv(test_path, index=False)
+        
+        print(f"✅ Processed data saved successfully to: {output_path}")    
