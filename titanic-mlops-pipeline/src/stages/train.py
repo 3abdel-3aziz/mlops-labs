@@ -20,14 +20,12 @@ def train(cfg: DictConfig):
         subsample=cfg.model_params.subsample,
         colsample_bytree=cfg.model_params.colsample_bytree,
         random_state=cfg.params.random_state,
-        use_label_encoder=False,
         eval_metric='logloss'
     )
     
     print("Training the model via Hydra parameters...")
     model.fit(X_train, y_train)
 
-    # حفظ الموديل
     os.makedirs("models", exist_ok=True)
     model_path = "models/model.joblib" 
     joblib.dump(model, model_path)
