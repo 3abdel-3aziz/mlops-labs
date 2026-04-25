@@ -1,0 +1,30 @@
+[33m228993e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;33mtag: [m[1;33mlab2[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m fix config
+[33m534871b[m Fix: Sync DVC lock file with latest training results
+[33m7d9b221[m DVC: link DagsHub remote storage
+[33m7f77edd[m feat: complete end-to-end pipeline with DVC and Hydra
+[33me1ea60c[m fix: let DVC track preprocessor instead of Git
+[33m7b0088b[m Success: First full DVC pipeline run
+[33me6853fb[m creating dvc.yaml file
+[33mbb9c90c[m main file updates
+[33md3bdb94[m feat: complete MLOps pipeline stages (train & evaluate)
+[33m298c26c[m feat: refactor pipeline into modular data loading and preprocessing stages
+[33m2847362[m chore: update config paths for 4-stage pipeline structure
+[33m8e0a18e[m feat: implement ClassificationEvaluator with JSON metrics saving
+[33m59d797b[m feat: add save method and feature engineering logic to build_features
+[33mc2905c0[m feat: add save_data method to DataSplitter class in make_dataset
+[33m952388b[m feat: setup modular pipeline structure in src/stages
+[33mfbcd1ae[m build: setup dvc and update dependencies
+[33m4e1e61a[m Final: Stable MLOps pipeline with Hydra, XGBoost, and fixed imports
+[33mb23bffd[m Fix config file name and sync YAML changes
+[33m807303e[m[33m ([m[1;31morigin/feat/lab1-hydra-configuration[m[33m, [m[1;32mfeat/lab1-hydra-configuration[m[33m)[m using config.ymal rather than config.py
+[33mf5dc51e[m update
+[33mc17e296[m adding libraries of api , saving the model and artifacts in the file , adjustment in the main
+[33m5fb14be[m adding app.py file , also adding lib(joblib) in requirment file
+[33mbfeb9ac[m model_train_predict_eval classes
+[33m3c9a668[m update of tile_path parmeter in config file
+[33m7efda53[m update config for model parametrs
+[33m4a1de9c[m updating __init__ file
+[33m6da6369[m updating some bugs in handler classes and creating encoder class
+[33m941dc0f[m first three steps in the pipeline (loading, splitting, handlling nulls, scalling )
+[33m5417dd6[m creating config file
+[33m25606b4[m stractured_files
